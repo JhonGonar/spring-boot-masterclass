@@ -1,0 +1,46 @@
+package com.example.demo.customer;
+
+import com.example.demo.infoapp.InfoApp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+// set certain configurations and date when teh application starts
+
+@Configuration
+public class CustomerConfiguration {
+
+    //coming form application properties /args (external) (On IntelliJ , Edit Configs option)
+    @Value("${app.useFakeCustomerRepo:false}")// ":" stands for default value
+    private Boolean useFakeCustomerRepo;
+
+    //this coming from application.properties
+    @Value("${info.company.name}")
+    private String companyName;
+
+    @Autowired
+    private Environment environment;
+
+    @Bean
+    CommandLineRunner commandLineRunner(InfoApp infoApp){
+        return args -> {
+            System.out.println("Command Line runner started!");
+            System.out.println(companyName);
+            System.out.println(
+                    environment.getProperty("info.app.version")
+            );
+            System.out.println(infoApp);
+        };
+    }
+
+    @Bean
+    CustomerRepo customerRepo(){
+        System.out.println("useFakeCustomerRepo = "+ useFakeCustomerRepo);
+        //return useFakeCustomerRepo ?
+                return new CustomerFakeRepository(); /*:
+                new CustomerRepository();*/
+    }
+}
